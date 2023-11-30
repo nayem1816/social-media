@@ -149,7 +149,9 @@ const getSinglePostService = async (id) => {
 };
 
 const getMyPostService = async (userId) => {
-  const result = await Post.find({ postCreator: userId });
+  const result = await Post.find({ postCreator: userId }).sort({
+    createdAt: -1,
+  });
   return result;
 };
 
