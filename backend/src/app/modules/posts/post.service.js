@@ -104,6 +104,36 @@ const getAllPostService = async (filters, paginationOptions) => {
       $project: {
         "postCreator.password": 0,
       },
+    },
+    {
+      // find total comments two model(comments and reply comments)
+      $lookup: {
+        from: "comments",
+        localField: "_id",
+        foreignField: "postId",
+        as: "comments",
+      },
+    },
+    {
+      $lookup: {
+        from: "replycomments",
+        localField: "_id",
+        foreignField: "postId",
+        as: "replycomments",
+      },
+    },
+    {
+      $addFields: {
+        totalComments: {
+          $add: [{ $size: "$comments" }, { $size: "$replycomments" }],
+        },
+      },
+    },
+    {
+      $project: {
+        comments: 0,
+        replycomments: 0,
+      },
     }
   );
 

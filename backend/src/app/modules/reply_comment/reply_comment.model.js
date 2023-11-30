@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const replyCommentSchema = new mongoose.Schema(
   {
-    commentCreator: {
+    replyCreator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -17,10 +17,10 @@ const replyCommentSchema = new mongoose.Schema(
       ref: "Comments",
       required: true,
     },
-    commentText: {
+    replyText: {
       type: String,
     },
-    commentImage: {
+    replyImage: {
       public_id: {
         type: String,
       },
