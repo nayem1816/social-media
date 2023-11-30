@@ -1,13 +1,17 @@
 const User = require("../User/user.model");
 const bcrypt = require("bcrypt");
 const jwtHelpers = require("../../../helpers/jwtHelpers");
+const ApiError = require("../../../errors/apiError");
+const config = require("../../../config/config");
+const Token = require("../token/token.model");
+const crypto = require("crypto");
+const sendEmail = require("../../../utils/sendEmail");
 
 const loginService = async (payload) => {
   const { email, password } = payload;
 
   const isExistUser = await User.findOne({
     email,
-    userStatus: "Active",
   });
 
   if (!isExistUser) {
@@ -43,48 +47,33 @@ const loginService = async (payload) => {
   };
 };
 
-const refreshToken = async (token) => {
-  //verify token
-  // invalid token - synchronous
-  let verifiedToken = null;
-  try {
-    verifiedToken = jwtHelpers.verifyToken(token, config.jwt.refresh_secret);
-  } catch (error) {
-    // throw new ApiError(422, "Invalid Refresh Token");
-    return {
-      error: "Invalid Refresh Token",
-      status: 422,
-    };
+const resetPasswordService = async (email) => {
+  const isExistUser = await User.findOne({
+    email: email,
+  });
+
+  if (!isExistUser) {
+    throw new ApiError(400, "User does not exist");
   }
 
-  const { _id } = verifiedToken;
+  let token = await Token.findOne({ userId: isExistUser._id });
 
-  // tumi delete hye gso  kintu tumar refresh token ase
-  // checking deleted user's refresh token
-
-  const isUserExist = await User.findById(_id);
-  if (!isUserExist) {
-    throw new ApiError(404, "User does not exist");
+  if (!token) {
+    token = await new Token({
+      userId: isExistUser._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    }).save();
   }
-  //generate new token
 
-  const newAccessToken = jwtHelpers.createToken(
-    {
-      _id: isUserExist._id,
-      email: isUserExist.email,
-      role: isUserExist.role,
-    },
-    config.jwt.secret,
-    config.jwt.expires_in
-  );
+  const link = `http://localhost:3000/reset-password/${isExistUser._id}/${token.token}`;
+  await sendEmail(isExistUser.email, "Password reset", link);
 
   return {
-    accessToken: newAccessToken,
-    user: isUserExist,
+    message: "Reset password link sent successfully",
   };
 };
 
 module.exports = {
   loginService,
-  refreshToken,
+  resetPasswordService,
 };

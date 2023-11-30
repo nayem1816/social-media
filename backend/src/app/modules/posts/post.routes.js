@@ -1,0 +1,20 @@
+const express = require("express");
+const auth = require("../../middlewares/auth");
+const PostController = require("../posts/post.controller");
+const { UploadImageCloudinary } = require("../../middlewares/uploadCloudinary");
+
+const router = express.Router();
+
+router.get("/my-posts", auth(), PostController.getMyPosts);
+
+router.post(
+  "/",
+  auth(),
+  UploadImageCloudinary.single("postImage"),
+  PostController.createPost
+);
+
+router.get("/", auth(), PostController.getAllPost);
+router.get("/:id", auth(), PostController.getSinglePost);
+
+module.exports = router;

@@ -17,7 +17,7 @@ const createUser = async (req, res, next) => {
       };
     }
 
-    const result = await UserService.createUserService(req.body, imageData);
+    const result = await UserService.createUserService(req.body, profileImage);
 
     const { password, ...userData } = result._doc;
 

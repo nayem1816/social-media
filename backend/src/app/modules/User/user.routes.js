@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.post(
   "/",
-  // auth("Super Admin", "Admin"),
   UploadImageCloudinary.single("profileImage"),
   UserController.createUser
 );

@@ -32,37 +32,23 @@ const login = async (req, res, next) => {
   }
 };
 
-const refreshToken = async (req, res) => {
-  const { refreshToken } = req.cookies;
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
 
-  const result = await AuthService.refreshToken(refreshToken);
-
-  if (result.error) {
-    return res.status(result.status).json({
-      statusCode: result.status,
-      success: false,
-      message: result.error,
-    });
-  } else {
-    // set refresh token into cookie
-    const cookieOptions = {
-      secure: config.env === "production",
-      httpOnly: true,
-      sameSite: "strict",
-    };
-
-    res.cookie("refreshToken", refreshToken, cookieOptions);
+    const result = await AuthService.resetPasswordService(email);
 
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Token refreshed successfully!",
-      data: result,
+      message: result.message,
     });
+  } catch (error) {
+    next(error);
   }
 };
 
 module.exports = {
   login,
-  refreshToken,
+  resetPassword,
 };

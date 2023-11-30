@@ -4,7 +4,7 @@ const { userSearchableFields } = require("./user.constant");
 const User = require("./user.model");
 
 const createUserService = async (payload, imageData) => {
-  const requiredFields = ["fullName", "email", "password", "phone", "role"];
+  const requiredFields = ["fullName", "email", "password"];
 
   for (const field of requiredFields) {
     if (!payload[field]) {
@@ -18,14 +18,17 @@ const createUserService = async (payload, imageData) => {
     throw new ApiError(400, "Email already exist");
   }
 
-  if (!imageData.url) {
-    throw new ApiError(400, "Please provide user image");
-  }
+  // if (!imageData.url) {
+  //   throw new ApiError(400, "Please provide user image");
+  // }
 
   const newData = {
     ...payload,
-    photo: imageData,
   };
+
+  if (imageData.url) {
+    newData.profileImage = imageData;
+  }
 
   const result = await User.create(newData);
 
