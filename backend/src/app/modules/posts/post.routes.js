@@ -16,5 +16,12 @@ router.post(
 
 router.get("/", auth(), PostController.getAllPost);
 router.get("/:id", auth(), PostController.getSinglePost);
+router.patch(
+  "/:id",
+  auth(),
+  UploadImageCloudinary.single("postImage"),
+  PostController.updateSinglePost
+);
+router.delete("/:id", auth(), PostController.deleteSinglePost);
 
 module.exports = router;

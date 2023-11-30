@@ -4,6 +4,7 @@ const { paginationHelpers } = require("../../../helpers/paginationHelpers");
 const User = require("../User/user.model");
 const { postSearchableFields } = require("./post.constant");
 const Post = require("./post.model");
+const { deleteImageCloudinary } = require("../../middlewares/uploadCloudinary");
 
 const createPostService = async (payload, imageData, userId) => {
   if (!payload.content && !imageData.url) {
@@ -152,9 +153,63 @@ const getMyPostService = async (userId) => {
   return result;
 };
 
+const updateSinglePostService = async (id, payload, imageData, userId) => {
+  const isExistPost = await Post.findById(id);
+
+  if (!isExistPost) {
+    throw new ApiError(400, "Post not found");
+  }
+
+  if (isExistPost.postCreator.toString() !== userId.toString()) {
+    throw new ApiError(403, "You are not allowed to update this post");
+  }
+
+  const newData = {};
+
+  if (payload.content) {
+    newData.content = payload.content;
+  }
+
+  if (imageData.url) {
+    newData.postImage = imageData;
+
+    if (isExistPost.postImage?.public_id) {
+      await deleteImageCloudinary(isExistPost.postImage?.public_id);
+    }
+  }
+
+  const result = await Post.findByIdAndUpdate(id, newData, {
+    new: true,
+  });
+
+  return result;
+};
+
+const deleteSinglePostService = async (id, userId) => {
+  const isExistPost = await Post.findById(id);
+
+  if (!isExistPost) {
+    throw new ApiError(400, "Post not found");
+  }
+
+  if (isExistPost.postCreator.toString() !== userId.toString()) {
+    throw new ApiError(403, "You are not allowed to update this post");
+  }
+
+  if (isExistPost.postImage?.public_id) {
+    await deleteImageCloudinary(isExistPost.postImage?.public_id);
+  }
+
+  const result = await Post.findByIdAndDelete(id);
+
+  return result;
+};
+
 module.exports = {
   createPostService,
   getAllPostService,
   getSinglePostService,
   getMyPostService,
+  updateSinglePostService,
+  deleteSinglePostService,
 };

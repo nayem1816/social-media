@@ -92,9 +92,63 @@ const getMyPosts = async (req, res, next) => {
   }
 };
 
+const updateSinglePost = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const file = req.file;
+
+    let postImage = {};
+
+    if (file?.path) {
+      postImage = {
+        url: file?.path,
+        public_id: file?.filename,
+      };
+    }
+
+    const result = await PostService.updateSinglePostService(
+      id,
+      req.body,
+      postImage,
+      userId
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Post updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteSinglePost = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const result = await PostService.deleteSinglePostService(id, userId);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Post deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createPost,
   getAllPost,
   getSinglePost,
   getMyPosts,
+  updateSinglePost,
+  deleteSinglePost,
 };
