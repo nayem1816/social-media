@@ -44,7 +44,7 @@ const createReactService = async (payload, userId) => {
   };
 };
 
-const getAllReactByPostIdService = async (postId) => {
+const getAllReactByPostIdService = async (postId, userId) => {
   const result = await Reaction.aggregate([
     {
       $match: {
@@ -55,6 +55,7 @@ const getAllReactByPostIdService = async (postId) => {
       $group: {
         _id: "$reactType",
         count: { $sum: 1 },
+        userId: { $push: "$userId" },
       },
     },
   ]);
@@ -62,7 +63,17 @@ const getAllReactByPostIdService = async (postId) => {
   return result;
 };
 
+const getMyReactionByPostIdService = async (postId, userId) => {
+  const result = await Reaction.findOne({
+    postId: postId,
+    userId: userId,
+  });
+
+  return result;
+};
+
 module.exports = {
   createReactService,
   getAllReactByPostIdService,
+  getMyReactionByPostIdService,
 };

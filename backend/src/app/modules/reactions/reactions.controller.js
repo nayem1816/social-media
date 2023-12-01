@@ -21,8 +21,12 @@ const createReact = async (req, res, next) => {
 const getAllReactByPostId = async (req, res, next) => {
   try {
     const postId = req.params.postId;
+    const userId = req.user._id;
 
-    const result = await ReactionsService.getAllReactByPostIdService(postId);
+    const result = await ReactionsService.getAllReactByPostIdService(
+      postId,
+      userId
+    );
 
     sendResponse(res, {
       statusCode: 200,
@@ -35,7 +39,29 @@ const getAllReactByPostId = async (req, res, next) => {
   }
 };
 
+const getMyReactionByPostId = async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.user._id;
+
+    const result = await ReactionsService.getMyReactionByPostIdService(
+      postId,
+      userId
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Get my reaction by post id successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createReact,
   getAllReactByPostId,
+  getMyReactionByPostId,
 };

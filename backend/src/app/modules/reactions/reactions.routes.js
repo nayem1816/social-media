@@ -4,6 +4,12 @@ const ReactionsController = require("./reactions.controller");
 
 const router = express.Router();
 
+router.get(
+  "/my-reaction/:postId",
+  auth(),
+  ReactionsController.getMyReactionByPostId
+);
+
 router.post("/", auth(), ReactionsController.createReact);
 router.get("/:postId", auth(), ReactionsController.getAllReactByPostId);
 

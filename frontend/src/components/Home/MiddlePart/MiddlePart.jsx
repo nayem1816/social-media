@@ -1,6 +1,6 @@
 import React from "react";
 import CreatePost from "./CreateyPost/CreatePost";
-import { useGetAllPostsQuery } from "../../../feature/course/courseSlice";
+import { useGetAllPostsQuery } from "../../../feature/post/postSlice";
 import { useSelector } from "react-redux";
 import SinglePost from "./SinglePost/SinglePost";
 
@@ -9,10 +9,8 @@ const MiddlePart = () => {
 
   const { data, isLoading } = useGetAllPostsQuery({ access_token });
 
-  console.log(data);
-
   return (
-    <div className="mx-0 lg:mx-10 grid gap-5 mt-5">
+    <div className="mx-0 lg:mx-10 grid gap-5 mt-5 ">
       <div className="post">
         <CreatePost />
       </div>

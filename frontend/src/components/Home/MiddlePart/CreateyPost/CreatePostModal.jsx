@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Modal } from "antd";
 import { MdAddToPhotos } from "react-icons/md";
 import toast from "react-hot-toast";
-import { useCreatePostMutation } from "../../../../feature/course/courseSlice";
+import { useCreatePostMutation } from "../../../../feature/post/postSlice";
 
 const CreatePostModal = ({ isModalOpen, setIsModalOpen }) => {
   const { user, access_token } = useSelector((state) => state.auth);
