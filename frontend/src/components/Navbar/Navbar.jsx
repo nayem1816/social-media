@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { MdHome, MdOutlineOndemandVideo } from "react-icons/md";
 import { HiMiniUserGroup } from "react-icons/hi2";
@@ -7,10 +7,17 @@ import toast from "react-hot-toast";
 import { TiPlus } from "react-icons/ti";
 import { FaFacebookMessenger, FaUserAlt } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
+import CreatePostModal from "../Home/MiddlePart/CreateyPost/CreatePostModal";
 
 const Navbar = () => {
   const handleDisableMessage = () => {
     toast.error("This feature is not available yet!");
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
   };
 
   return (
@@ -61,12 +68,16 @@ const Navbar = () => {
       <section className="h-full">
         <ul className="h-full flex justify-end items-center gap-2">
           <li className="w-[49px] h-full flex items-center justify-center border-x-8 border-y-8 border-transparent">
-            <a
-              href="#"
+            <button
+              onClick={showModal}
               className="bg-[#E4E6EB] hover:bg-[#d5d8e0] p-2.5 rounded-full"
               title="Create">
               <TiPlus className="text-xl text-[#050505]" />
-            </a>
+            </button>
+            <CreatePostModal
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
+            />
           </li>
 
           <li className="w-[49px] h-full flex items-center justify-center border-x-8 border-y-8 border-transparent">

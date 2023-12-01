@@ -1,5 +1,7 @@
 import React from "react";
 import LeftSide from "../../components/Home/LeftSide/LeftSide";
+import RightSide from "../../components/Home/RightSide/RightSide";
+import MiddlePart from "../../components/Home/MiddlePart/MiddlePart";
 
 const Home = () => {
   return (
@@ -7,8 +9,12 @@ const Home = () => {
       <div className="col-span-2">
         <LeftSide />
       </div>
-      <div className="col-span-3">2</div>
-      <div className="col-span-2">3</div>
+      <div className="col-span-3">
+        <MiddlePart />
+      </div>
+      <div className="col-span-2">
+        <RightSide />
+      </div>
     </div>
   );
 };
