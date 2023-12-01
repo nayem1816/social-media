@@ -70,13 +70,21 @@ const LoginPage = () => {
                     Password
                   </label>
                 </div>
-                <div className="mt-2 mb-5">
+                <div className="mt-2 mb-5 flex gap-2 items-center justify-end">
                   <p className="text-xs text-end">
                     Don't have an account?{" "}
                     <Link
                       to="/register"
                       className="hover:underline text-blue-500">
                       Register
+                    </Link>
+                  </p>
+                  <p>|</p>
+                  <p className="mb-1">
+                    <Link
+                      to="/reset-password"
+                      className="hover:underline text-blue-500 text-xs">
+                      Forgot password?
                     </Link>
                   </p>
                 </div>

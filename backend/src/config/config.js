@@ -21,4 +21,10 @@ module.exports = {
     expires_in: process.env.JWT_EXPIRES_IN,
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
   },
+  emailjs: {
+    service_id: process.env.EMAILJS_SERVICE_ID,
+    template_id: process.env.EMAILJS_TEMPLATE_ID,
+    public_key: process.env.EMAILJS_PUBLIC_KEY,
+    private_key: process.env.EMAILJS_PRIVATE_KEY,
+  },
 };

@@ -6,6 +6,8 @@ import Errorpage from "../pages/Errorpage/Errorpage";
 import LoginPage from "../pages/Auth/LoginPage";
 import RegisterPage from "../pages/Auth/RegisterPage";
 import Home from "../pages/Home/Home";
+import ResetPage from "../pages/ResetPassword/ResetPage";
+import ResetNewPass from "../pages/ResetPassword/ResetNewPass";
 
 export const routes = createBrowserRouter([
   {
@@ -35,6 +37,22 @@ export const routes = createBrowserRouter([
     element: (
       <UserRoute path={"/"}>
         <RegisterPage />
+      </UserRoute>
+    ),
+  },
+  {
+    path: "/reset-password",
+    element: (
+      <UserRoute path={"/"}>
+        <ResetPage />
+      </UserRoute>
+    ),
+  },
+  {
+    path: "/reset-password/:token",
+    element: (
+      <UserRoute path={"/"}>
+        <ResetNewPass />
       </UserRoute>
     ),
   },

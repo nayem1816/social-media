@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Popover } from "antd";
 import {
   LikeOutlined,
@@ -15,14 +15,20 @@ import {
   useGetMyReactionQuery,
 } from "../../../../../feature/post/postSlice";
 import { useSelector } from "react-redux";
+import SinglePostModal from "../../../../Common/SinglePostModal";
 
-const SinglePostReaction = ({ post }) => {
+const SinglePostReaction = ({ post, modal }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { user, access_token } = useSelector((state) => state.auth);
 
   const { data, isLoading: myLoading } = useGetMyReactionQuery({
     access_token,
     postId: post?._id,
   });
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
 
   const [createReaction, { isLoading }] = useCreateReactionMutation();
 
@@ -34,8 +40,6 @@ const SinglePostReaction = ({ post }) => {
 
     await createReaction({ bodyData, access_token });
   };
-
-  console.log(data);
 
   return (
     <div className="flex justify-between items-center gap-5">
@@ -93,10 +97,17 @@ const SinglePostReaction = ({ post }) => {
           {data?.data?.reactType || "Like"}
         </button>
       </Popover>
-      <button className="w-full hover:bg-gray-200 hover:rounded-xl py-1 flex items-center gap-2 justify-center">
+      <button
+        onClick={modal !== true ? showModal : null}
+        className="w-full hover:bg-gray-200 hover:rounded-xl py-1 flex items-center gap-2 justify-center">
         <CommentOutlined />
         Comment
       </button>
+      <SinglePostModal
+        post={post}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
       <Tooltip title="Coming soon this feature" placement="top">
         <button className="w-full hover:bg-gray-200 hover:rounded-xl py-1 flex items-center gap-2 justify-center">
           <ShareAltOutlined />

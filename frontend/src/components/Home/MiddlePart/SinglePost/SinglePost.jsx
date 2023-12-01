@@ -1,52 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Divider, Dropdown, Popover } from "antd";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { LikeOutlined, HeartOutlined } from "@ant-design/icons";
 import { Avatar, Tooltip } from "antd";
 import SinglePostReaction from "./SinglePostReaction/SinglePostReaction";
-import { useGetAllReactionsQuery } from "../../../../feature/post/postSlice";
+import {
+  useDeletePostMutation,
+  useGetAllReactionsQuery,
+} from "../../../../feature/post/postSlice";
 import { useSelector } from "react-redux";
 import { FaRegFaceLaughBeam, FaRegFaceSadTear } from "react-icons/fa6";
+import Comments from "./Comments/Comments";
+import CreatePostModal from "../CreateyPost/CreatePostModal";
+import toast from "react-hot-toast";
 
-const SinglePost = ({ post }) => {
-  const items = [
-    {
-      key: "1",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com">
-          1st menu item
-        </a>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com">
-          2nd menu item
-        </a>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.luohanacademy.com">
-          3rd menu item
-        </a>
-      ),
-    },
-  ];
-
+const SinglePost = ({ post, modal }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { user, access_token } = useSelector((state) => state.auth);
+
+  const [deletePost, { isLoading: deleteLoading }] = useDeletePostMutation();
 
   const { data, isLoading } = useGetAllReactionsQuery({
     access_token,
@@ -56,6 +29,20 @@ const SinglePost = ({ post }) => {
   const totalReactions = data?.data?.reduce((acc, curr) => {
     return acc + curr?.count;
   }, 0);
+
+  const handleDeletePost = async (postId) => {
+    const res = await deletePost({ postId, access_token });
+
+    if (res?.data?.success) {
+      toast.success("Post deleted successfully");
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
+
+  if (deleteLoading) {
+    return <div className="text-center">Loading...</div>;
+  }
 
   return (
     <div className="bg-white rounded-md ">
@@ -83,19 +70,35 @@ const SinglePost = ({ post }) => {
               </p>
             </div>
           </div>
-          <div className="">
-            <Dropdown
-              trigger={["click"]}
-              menu={{
-                items,
-              }}
-              placement="bottomRight"
-              arrow>
-              <div className="bg-gray-200 p-2 rounded-full text-gray-800 hover:bg-gray-300 cursor-pointer select-none">
-                <BsThreeDotsVertical />
-              </div>
-            </Dropdown>
-          </div>
+          {post.postCreator._id === user._id && (
+            <div className="">
+              <Dropdown
+                trigger={["click"]}
+                menu={{
+                  items: [
+                    {
+                      label: "Edit",
+                      onClick: () => setIsModalOpen(true),
+                    },
+                    {
+                      label: "Delete",
+                      onClick: () => handleDeletePost(post?._id),
+                    },
+                  ],
+                }}
+                placement="bottomRight"
+                arrow>
+                <div className="bg-gray-200 p-2 rounded-full text-gray-800 hover:bg-gray-300 cursor-pointer select-none">
+                  <BsThreeDotsVertical />
+                </div>
+              </Dropdown>
+              <CreatePostModal
+                post={post}
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+              />
+            </div>
+          )}
         </div>
         {post?.content && (
           <div className="my-3">
@@ -112,7 +115,7 @@ const SinglePost = ({ post }) => {
           </div>
         )}
 
-        <div className="">
+        <div className="flex justify-between">
           <Avatar.Group
             maxCount={5}
             maxPopoverTrigger="click"
@@ -171,9 +174,20 @@ const SinglePost = ({ post }) => {
               <p className="ml-1">{totalReactions}</p>
             )}
           </Avatar.Group>
+          {post?.totalComments === 0 ? null : (
+            <div className="total-comments">{post?.totalComments} Comments</div>
+          )}
         </div>
         <Divider className="mt-4 mb-2" />
-        <SinglePostReaction post={post} />
+        <SinglePostReaction post={post} modal={modal} />
+        {modal === true && (
+          <>
+            <Divider className="mt-4 mb-2" />
+            <div className="comments">
+              <Comments post={post} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

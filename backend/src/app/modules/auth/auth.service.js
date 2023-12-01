@@ -5,7 +5,7 @@ const ApiError = require("../../../errors/apiError");
 const config = require("../../../config/config");
 const Token = require("../token/token.model");
 const crypto = require("crypto");
-const sendEmail = require("../../../utils/sendEmail");
+const nodemailer = require("nodemailer");
 
 const loginService = async (payload) => {
   const { email, password } = payload;
@@ -66,7 +66,30 @@ const resetPasswordService = async (email) => {
   }
 
   const link = `http://localhost:3000/reset-password/${isExistUser._id}/${token.token}`;
-  await sendEmail(isExistUser.email, "Password reset", link);
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    auth: {
+      user: "nathanael77@ethereal.email",
+      pass: "6ywNf5hd1tdaUTcpMS",
+    },
+  });
+
+  const mailOptions = {
+    from: "nathanael77@ethereal.email",
+    to: email,
+    subject: "Reset Password",
+    text: `Hello ${isExistUser.fullName}, reset your password using the following link: ${link}`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error sending email:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
 
   return {
     message: "Reset password link sent successfully",

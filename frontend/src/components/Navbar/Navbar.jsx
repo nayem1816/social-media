@@ -8,8 +8,13 @@ import { TiPlus } from "react-icons/ti";
 import { FaFacebookMessenger, FaUserAlt } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
 import CreatePostModal from "../Home/MiddlePart/CreateyPost/CreatePostModal";
+import { Dropdown } from "antd";
+import { useDispatch } from "react-redux";
+import { userLoggedOut } from "../../feature/auth/authSlice";
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+
   const handleDisableMessage = () => {
     toast.error("This feature is not available yet!");
   };
@@ -97,11 +102,32 @@ const Navbar = () => {
           </li>
 
           <li className="w-[49px] h-full flex items-center justify-center border-x-8 border-y-8 border-transparent">
-            <button
-              className="bg-[#E4E6EB] hover:bg-[#d5d8e0] p-2.5 rounded-full"
-              title="Notifications">
-              <FaUserAlt className="text-xl text-[#050505]" />
-            </button>
+            <Dropdown
+              trigger={["click"]}
+              menu={{
+                items: [
+                  {
+                    label: "Profile",
+                    onClick: () => {
+                      toast.error("This feature is not available yet!");
+                    },
+                  },
+                  {
+                    label: "Logout",
+                    onClick: () => {
+                      dispatch(userLoggedOut());
+                    },
+                  },
+                ],
+              }}
+              placement="bottomRight"
+              arrow>
+              <button
+                className="bg-[#E4E6EB] hover:bg-[#d5d8e0] p-2.5 rounded-full"
+                title="Notifications">
+                <FaUserAlt className="text-xl text-[#050505]" />
+              </button>
+            </Dropdown>
           </li>
         </ul>
       </section>

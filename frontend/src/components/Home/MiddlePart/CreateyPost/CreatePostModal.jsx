@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import { Modal } from "antd";
 import { MdAddToPhotos } from "react-icons/md";
 import toast from "react-hot-toast";
-import { useCreatePostMutation } from "../../../../feature/post/postSlice";
+import {
+  useCreatePostMutation,
+  useUpdatePostMutation,
+} from "../../../../feature/post/postSlice";
 
-const CreatePostModal = ({ isModalOpen, setIsModalOpen }) => {
+const CreatePostModal = ({ isModalOpen, setIsModalOpen, post }) => {
   const { user, access_token } = useSelector((state) => state.auth);
 
   const [content, setContent] = useState("");
@@ -14,6 +17,7 @@ const CreatePostModal = ({ isModalOpen, setIsModalOpen }) => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [createPost, { isLoading }] = useCreatePostMutation();
+  const [updatePost, { isLoading: updateLoading }] = useUpdatePostMutation();
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -54,13 +58,45 @@ const CreatePostModal = ({ isModalOpen, setIsModalOpen }) => {
     }
   };
 
+  const handleUpdatePost = async () => {
+    if (!content && !selectedFile) {
+      return toast.error("Please write something or select an image");
+    }
+
+    const formData = new FormData();
+
+    if (content) {
+      formData.append("content", content);
+    }
+
+    if (selectedFile) {
+      formData.append("postImage", selectedFile);
+    }
+
+    const res = await updatePost({
+      bodyData: formData,
+      access_token,
+      postId: post._id,
+    });
+
+    if (res.data.success) {
+      toast.success("Post updated successfully");
+      setIsModalOpen(false);
+      setSelectedFile(null);
+      setContent("");
+      setImagePreview(null);
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <Modal
       footer={null}
       title={
         <>
           <h2 className="text-xl font-semibold text-center mb-2">
-            Create Post
+            {post?.content ? "Edit Post" : "Create Post"}
           </h2>
           <hr />
         </>
@@ -78,16 +114,17 @@ const CreatePostModal = ({ isModalOpen, setIsModalOpen }) => {
         </div>
         <div className="input-box w-full my-4 h-[250px] overflow-y-auto">
           <textarea
+            defaultValue={post?.content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="What's on your mind ?"
             class="peer w-full h-16  border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600"
           />
           <div className="border p-2 rounded-lg">
             <label htmlFor="file-upload">
-              {imagePreview ? (
+              {imagePreview || post?.postImage?.url ? (
                 <img
                   className="h-48 w-full rounded-lg"
-                  src={imagePreview}
+                  src={post?.postImage.url || imagePreview}
                   alt="img"
                 />
               ) : (
@@ -114,16 +151,26 @@ const CreatePostModal = ({ isModalOpen, setIsModalOpen }) => {
             </label>
           </div>
         </div>
-        {isLoading ? (
+        {isLoading || updateLoading ? (
           <button className="bg-blue-500 w-full text-white rounded-md px-4 py-2 mb-4">
-            Posting...
+            {isLoading ? "Creating Post..." : "Updating Post..."}
           </button>
         ) : (
-          <button
-            onClick={() => handleCreatePost()}
-            className="bg-blue-500 w-full text-white rounded-md px-4 py-2 mb-4">
-            Post
-          </button>
+          <>
+            {post?.content ? (
+              <button
+                onClick={() => handleUpdatePost()}
+                className="bg-blue-500 w-full text-white rounded-md px-4 py-2 mb-4">
+                Edit Post
+              </button>
+            ) : (
+              <button
+                onClick={() => handleCreatePost()}
+                className="bg-blue-500 w-full text-white rounded-md px-4 py-2 mb-4">
+                Post
+              </button>
+            )}
+          </>
         )}
       </div>
     </Modal>

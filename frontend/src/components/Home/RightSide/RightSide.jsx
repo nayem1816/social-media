@@ -5,10 +5,15 @@ import { Link } from "react-router-dom";
 import { FaUserFriends, FaLandmark } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import { MdRecentActors, MdOutlineOndemandVideo } from "react-icons/md";
+import UserSkeleton from "../../Common/UserSkeleton";
 const RightSide = () => {
   const { user, access_token } = useSelector((state) => state.auth);
 
-  const { data } = useGetAllUsersQuery(access_token);
+  const { data, isLoading } = useGetAllUsersQuery(access_token);
+
+  if (isLoading) {
+    return <UserSkeleton />;
+  }
 
   return (
     <div>

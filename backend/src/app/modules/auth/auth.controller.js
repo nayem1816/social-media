@@ -1,6 +1,7 @@
 const config = require("../../../config/config");
 const sendResponse = require("../../../shared/sendResponse");
 const AuthService = require("./auth.service");
+const emailjs = require("@emailjs/nodejs");
 
 const login = async (req, res, next) => {
   try {
