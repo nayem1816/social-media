@@ -38,12 +38,14 @@ const createPost = async (req, res, next) => {
 
 const getAllPost = async (req, res, next) => {
   try {
+    const userId = req.user._id;
     const filters = pick(req.query, postFilterableFields);
     const paginationOptions = pick(req.query, paginationFields);
 
     const result = await PostService.getAllPostService(
       filters,
-      paginationOptions
+      paginationOptions,
+      userId
     );
 
     sendResponse(res, {
@@ -62,7 +64,9 @@ const getSinglePost = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const result = await PostService.getSinglePostService(id);
+    const userId = req.user._id;
+
+    const result = await PostService.getSinglePostService(id, userId);
 
     sendResponse(res, {
       statusCode: 200,
@@ -144,6 +148,42 @@ const deleteSinglePost = async (req, res, next) => {
   }
 };
 
+// const readPost = async (req, res, next) => {
+//   try {
+//     const userId = req.user._id;
+//     const { postId } = req.body;
+
+//     const result = await PostService.readPostService(postId, userId);
+
+//     sendResponse(res, {
+//       statusCode: 200,
+//       success: true,
+//       message: "Post read successfully",
+//       data: result,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+// const getAllReadUnreadPost = async (req, res, next) => {
+//   try {
+//     const userId = req.user._id;
+//     const { isRead } = req.query;
+
+//     const result = await PostService.getAllReadUnreadPostService(userId);
+
+//     sendResponse(res, {
+//       statusCode: 200,
+//       success: true,
+//       message: "All read/unread post",
+//       data: result,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 module.exports = {
   createPost,
   getAllPost,
@@ -151,4 +191,6 @@ module.exports = {
   getMyPosts,
   updateSinglePost,
   deleteSinglePost,
+  // readPost,
+  // getAllReadUnreadPost,
 };

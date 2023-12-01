@@ -34,7 +34,7 @@ const createPostService = async (payload, imageData, userId) => {
   return result;
 };
 
-const getAllPostService = async (filters, paginationOptions) => {
+const getAllPostService = async (filters, paginationOptions, userId) => {
   const { searchTerm, ...filtersData } = filters;
 
   const { page, limit, skip, sortBy, sortOrder } =
@@ -137,6 +137,28 @@ const getAllPostService = async (filters, paginationOptions) => {
     }
   );
 
+  aggregationPipeline.push(
+    {
+      // read post or not
+      $addFields: {
+        isRead: {
+          $cond: {
+            if: {
+              $in: [userId, "$readUser"],
+            },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        readUser: 0,
+      },
+    }
+  );
+
   const result = await Post.aggregate(aggregationPipeline);
   const total = await Post.countDocuments(matchStage);
 
@@ -150,7 +172,26 @@ const getAllPostService = async (filters, paginationOptions) => {
   };
 };
 
-const getSinglePostService = async (id) => {
+const getSinglePostService = async (id, userId) => {
+  const isExistUser = await Post.findOne({
+    _id: id,
+    readUser: { $elemMatch: { $eq: userId } },
+  });
+
+  if (!isExistUser) {
+    await Post.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          readUser: userId,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  }
+
   const result = await Post.aggregate([
     {
       $match: {
@@ -237,6 +278,61 @@ const deleteSinglePostService = async (id, userId) => {
   return result;
 };
 
+// const readPostService = async (postId, userId) => {
+//   const isExistPost = await Post.findById(postId);
+//   if (!isExistPost) {
+//     throw new ApiError(400, "Post not found");
+//   }
+
+//   const isExistUser = await User.findById(userId);
+//   if (!isExistUser) {
+//     throw new ApiError(400, "User not found");
+//   }
+
+//   const isRead = isExistPost.readUser.includes(userId);
+
+//   if (isRead) {
+//     throw new ApiError(400, "You already read this post");
+//   }
+
+//   const result = await Post.findByIdAndUpdate(
+//     postId,
+//     {
+//       $push: {
+//         readUser: userId,
+//       },
+//     },
+//     {
+//       new: true,
+//     }
+//   );
+
+//   return result;
+// };
+
+// const getAllReadUnreadPostService = async (userId) => {
+//   const result = await Post.aggregate([
+//     {
+//       $lookup: {
+//         from: "users",
+//         localField: "postCreator",
+//         foreignField: "_id",
+//         as: "postCreator",
+//       },
+//     },
+//     {
+//       $unwind: "$postCreator",
+//     },
+//     {
+//       $project: {
+//         "postCreator.password": 0,
+
+//       },
+//     },
+
+//   ]);
+// };
+
 module.exports = {
   createPostService,
   getAllPostService,
@@ -244,4 +340,5 @@ module.exports = {
   getMyPostService,
   updateSinglePostService,
   deleteSinglePostService,
+  // readPostService,
 };
