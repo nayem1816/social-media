@@ -54,7 +54,7 @@ const getAllUsers = async (req, res, next) => {
 
 const getMyProfile = async (req, res, next) => {
   try {
-    const userId = req.userId;
+    const userId = req.user._id;
 
     const result = await UserService.getMyProfileService(userId);
 

@@ -27,17 +27,14 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       public_id: {
         type: String,
-        required: true,
       },
       url: {
         type: String,
-        required: true,
       },
     },
     phone: {
       type: String,
       length: [11, "Phone number must be 11 digits"],
-      required: true,
       trim: true,
     },
   },

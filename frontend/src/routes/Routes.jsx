@@ -3,32 +3,22 @@ import Main from "../layouts/Main";
 import UserRoute from "./UserRoute";
 import PrivateRoute from "./PrivateRoute";
 import Errorpage from "../pages/Errorpage/Errorpage";
-import Dashboard from "../layouts/Dashboard";
+import LoginPage from "../pages/Auth/LoginPage";
+import RegisterPage from "../pages/Auth/RegisterPage";
+import Home from "../pages/Home/Home";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: <Main />,
-    children: [
-      {
-        path: "/",
-        element: <h2>Home</h2>,
-      },
-    ],
-  },
-  {
-    path: "/private",
     element: (
-      <PrivateRoute
-        allowedRoles={["Super Admin", "Admin", "Moderator", "User"]}
-        path={"/login"}>
+      <PrivateRoute path={"/login"}>
         <Main />
       </PrivateRoute>
     ),
     children: [
       {
-        path: "/private",
-        element: <h2>Private route</h2>,
+        path: "/",
+        element: <Home />,
       },
     ],
   },
@@ -36,7 +26,7 @@ export const routes = createBrowserRouter([
     path: "/login",
     element: (
       <UserRoute path={"/"}>
-        <h2>Login</h2>
+        <LoginPage />
       </UserRoute>
     ),
   },
@@ -44,25 +34,9 @@ export const routes = createBrowserRouter([
     path: "/register",
     element: (
       <UserRoute path={"/"}>
-        <h2>Register</h2>
+        <RegisterPage />
       </UserRoute>
     ),
-  },
-  {
-    path: "/dashboard",
-    element: (
-      <PrivateRoute
-        allowedRoles={["Super Admin", "Admin", "Moderator"]}
-        path={"/login"}>
-        <Dashboard />
-      </PrivateRoute>
-    ),
-    children: [
-      {
-        path: "/dashboard",
-        element: <h2>Dashboard</h2>,
-      },
-    ],
   },
   {
     path: "*",

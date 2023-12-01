@@ -13,7 +13,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           },
         };
       },
-      providesTags: ["user"],
+      providesTags: [""],
     }),
 
     getAllUsers: builder.query({
