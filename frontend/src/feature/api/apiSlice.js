@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BaseURL = `http://localhost:5050/api/v1`;
+const BaseURL = `https://social-media-mocha-rho.vercel.app/api/v1`;
 
 export const apiSlice = createApi({
   reducerPath: "apiSlice",
