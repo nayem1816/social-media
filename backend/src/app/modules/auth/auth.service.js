@@ -73,6 +73,7 @@ const resetPasswordService = async (email) => {
     service: "gmail",
     host: "smtp.gmail.com",
     port: 587,
+    secure: true,
     auth: {
       user: config.nodemailer.user,
       pass: config.nodemailer.pass,
