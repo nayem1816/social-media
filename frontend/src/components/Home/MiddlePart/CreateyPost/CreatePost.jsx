@@ -18,7 +18,10 @@ const CreatePost = () => {
       <div className="top px-5 pt-5 pb-2 flex items-center gap-3">
         <img
           className="h-8 w-8 rounded-full"
-          src={user.profileImage.url}
+          src={
+            user.profileImage?.url ||
+            "https://www.shareicon.net/data/512x512/2016/09/15/829472_man_512x512.png"
+          }
           alt="user"
         />
         <div

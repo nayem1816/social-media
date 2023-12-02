@@ -107,7 +107,10 @@ const CreatePostModal = ({ isModalOpen, setIsModalOpen, post }) => {
         <div className="flex items-center gap-2">
           <img
             className="h-10 w-10 rounded-full shadow"
-            src={user?.profileImage?.url}
+            src={
+              user?.profileImage?.url ||
+              "https://www.shareicon.net/data/512x512/2016/09/15/829472_man_512x512.png"
+            }
             alt="user"
           />
           <h2 className="font-semibold">{user?.fullName}</h2>
@@ -124,7 +127,7 @@ const CreatePostModal = ({ isModalOpen, setIsModalOpen, post }) => {
               {imagePreview || post?.postImage?.url ? (
                 <img
                   className="h-48 w-full rounded-lg"
-                  src={post?.postImage.url || imagePreview}
+                  src={post?.postImage?.url || imagePreview}
                   alt="img"
                 />
               ) : (

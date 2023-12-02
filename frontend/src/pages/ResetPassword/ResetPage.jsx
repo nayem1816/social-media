@@ -19,7 +19,11 @@ const ResetPage = () => {
 
     const res = await resetPassword({ bodyData });
 
-    console.log(res);
+    if (res.data.success) {
+      toast.success("Reset password link sent to your email");
+    } else {
+      toast.error("Something went wrong");
+    }
   };
 
   return (
@@ -54,12 +58,20 @@ const ResetPage = () => {
               />
             </div>
             <div class="mb-6 text-center">
-              <button
-                onClick={() => handleResetPassword()}
-                class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none focus:shadow-outline"
-                type="button">
-                Reset Password
-              </button>
+              {isLoading ? (
+                <button
+                  class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none focus:shadow-outline"
+                  type="button">
+                  Loading...
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleResetPassword()}
+                  class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none focus:shadow-outline"
+                  type="button">
+                  Reset Password
+                </button>
+              )}
             </div>
             <hr class="mb-6 border-t" />
             <div class="text-center">

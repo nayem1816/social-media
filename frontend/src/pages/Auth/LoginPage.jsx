@@ -19,14 +19,20 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     const res = await loginUser({ bodyData: data });
 
-    if (res.data.success) {
+    console.log(res);
+
+    if (res?.data?.success) {
       setTimeout(() => {
-        toast.success("Login successfully!");
+        return toast.success("Login successfully!");
       }, 1000);
 
       navigate("/");
     } else {
-      toast.error("Failed to login user");
+      return toast.error("Something went wrong");
+    }
+
+    if (res?.error?.data?.success) {
+      return toast.error(res?.error?.data?.message);
     }
   };
   return (

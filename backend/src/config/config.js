@@ -10,6 +10,7 @@ module.exports = {
   port: process.env.PORT,
   database_url: process.env.DATABASE_URL,
   bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
+  frontend_link: process.env.FRONTEND_LINK,
   cloudinary: {
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,
@@ -26,5 +27,9 @@ module.exports = {
     template_id: process.env.EMAILJS_TEMPLATE_ID,
     public_key: process.env.EMAILJS_PUBLIC_KEY,
     private_key: process.env.EMAILJS_PRIVATE_KEY,
+  },
+  nodemailer: {
+    user: process.env.NODEMAILER_USER,
+    pass: process.env.NODEMAILER_PASS,
   },
 };

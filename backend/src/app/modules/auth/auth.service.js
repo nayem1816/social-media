@@ -14,15 +14,17 @@ const loginService = async (payload) => {
     email,
   });
 
+  console.log("isExistUser", isExistUser);
+
   if (!isExistUser) {
     throw new ApiError(400, "User does not exist");
   }
 
   const { _id, role } = isExistUser;
 
-  const isMatchPassword = async () => {
-    return await bcrypt.compare(password, isExistUser.password);
-  };
+  const isMatchPassword = await bcrypt.compare(password, isExistUser.password);
+
+  console.log("isMatchPassword", isMatchPassword);
 
   if (!isMatchPassword) {
     throw new ApiError(400, "Invalid credentials");
@@ -65,38 +67,100 @@ const resetPasswordService = async (email) => {
     }).save();
   }
 
-  const link = `http://localhost:3000/reset-password/${isExistUser._id}/${token.token}`;
+  const link = `${config.frontend_link}/reset-password/${isExistUser._id}/${token.token}`;
 
   const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 587,
     auth: {
-      user: "nathanael77@ethereal.email",
-      pass: "6ywNf5hd1tdaUTcpMS",
+      user: config.nodemailer.user,
+      pass: config.nodemailer.pass,
     },
   });
 
   const mailOptions = {
-    from: "nathanael77@ethereal.email",
+    from: config.nodemailer.user,
     to: email,
     subject: "Reset Password",
     text: `Hello ${isExistUser.fullName}, reset your password using the following link: ${link}`,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error sending email:", error);
-    } else {
-      console.log("Email sent:", info.response);
-    }
+  // transporter.sendMail(mailOptions, (error, info) => {
+  //   if (error) {
+  //     console.log("Error sending email:", error);
+  //   } else {
+  //     console.log("Email sent:", info.response);
+  //   }
+  // });
+
+  const sendMailPromise = () => {
+    return new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(info);
+        }
+      });
+    });
+  };
+
+  try {
+    const info = await sendMailPromise();
+    console.log("Email sent:", info.response);
+    return {
+      message: "Reset password link sent successfully",
+    };
+  } catch (error) {
+    console.log("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
+
+  // return {
+  //   message: "Reset password link sent successfully",
+  // };
+};
+
+const resetPasswordByUserIdAndTokenService = async (
+  userId,
+  token,
+  password
+) => {
+  const isExistValidToken = await Token.findOne({
+    userId,
+    token,
   });
 
+  if (!isExistValidToken) {
+    throw new ApiError(400, "Invalid token");
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    password,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    {
+      password: hashedPassword,
+    },
+    {
+      new: true,
+    }
+  );
+
+  await Token.findByIdAndDelete(isExistValidToken._id);
+
   return {
-    message: "Reset password link sent successfully",
+    message: "Password reset successfully",
+    data: result,
   };
 };
 
 module.exports = {
   loginService,
   resetPasswordService,
+  resetPasswordByUserIdAndTokenService,
 };

@@ -53,7 +53,7 @@ const SinglePost = ({ post, modal }) => {
               className="h-10 w-10 rounded-full shadow"
               src={
                 post?.postCreator?.profileImage?.url ||
-                "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                "https://www.shareicon.net/data/512x512/2016/09/15/829472_man_512x512.png"
               }
               alt="user"
             />
@@ -109,7 +109,10 @@ const SinglePost = ({ post, modal }) => {
           <div className="my-3">
             <img
               className="w-full h-full rounded-md"
-              src={post?.postImage?.url}
+              src={
+                post?.postImage?.url ||
+                "https://www.shareicon.net/data/512x512/2016/09/15/829472_man_512x512.png"
+              }
               alt=""
             />
           </div>

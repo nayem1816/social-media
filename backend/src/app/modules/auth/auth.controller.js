@@ -49,7 +49,30 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const resetPasswordByUserIdAndToken = async (req, res, next) => {
+  try {
+    const { userId, token } = req.params;
+    const { password } = req.body;
+
+    const result = await AuthService.resetPasswordByUserIdAndTokenService(
+      userId,
+      token,
+      password
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: result.message,
+      data: result.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   login,
   resetPassword,
+  resetPasswordByUserIdAndToken,
 };

@@ -16,7 +16,10 @@ const LeftSide = () => {
             to="/"
             class="flex items-center justify-start px-2 py-2 hover:bg-[#E4E6EB] rounded-lg">
             <img
-              src={auth?.user?.profileImage?.url}
+              src={
+                auth?.user?.profileImage?.url ||
+                "https://www.shareicon.net/data/512x512/2016/09/15/829472_man_512x512.png"
+              }
               width="36"
               height="36"
               alt="user"
@@ -113,7 +116,10 @@ const LeftSide = () => {
             to="/"
             class="flex items-center justify-start px-2 py-2 hover:bg-[#E4E6EB] rounded-lg">
             <img
-              src={auth?.user?.profileImage?.url}
+              src={
+                auth?.user?.profileImage?.url ||
+                "https://www.shareicon.net/data/512x512/2016/09/15/829472_man_512x512.png"
+              }
               width="36"
               height="36"
               alt="Axolotl Lovers"
